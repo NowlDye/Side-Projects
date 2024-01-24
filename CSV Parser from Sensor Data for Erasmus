@@ -39,15 +39,11 @@ def getTot(data):
     for x in range(0, len(data)): # Gets the total number of 1's and returns it
         total += data[x]
     return total
-    
-totHappy = getTot(happy)
-totBad = getTot(bad)
-totOkay = getTot(okay)
 
 totals = []
 
-totals.append(totHappy)
-totals.append(totBad)
-totals.append(totOkay)
+totals.append(getTot(happy))
+totals.append(getTot(bad))
+totals.append(getTot(okay))
 
 print(totals)
