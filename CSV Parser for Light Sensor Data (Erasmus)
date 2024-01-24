@@ -1,0 +1,32 @@
+import csv
+
+file = open('.\Erasmus\Light-Sensor\Light-Data.csv') # Adjust root to where the file is located
+
+csvreader = csv.reader(file)
+
+next(csvreader)
+
+roughList = []
+filteredList = []
+tempList = []
+
+# Append all the data into nested lists
+for row in csvreader:
+    roughList.append(row[1:4])
+
+# Pulls important data from the different nested lists
+def loopThrough(rList, fList, tList, index):
+    indx = index
+    for x in rList: # Loops through the rough list and appends indices to the temporary list and then adds 1 onto the index counter
+        tList.append(x[indx])
+        indx += 1 
+        if len(fList) == len(rList) // 3:
+            return fList
+        elif indx == 3: # When the index counter reaches 3, it will append an integrated list of the three light values into the final list then reset the loop
+            fList.append(tList.copy())
+            tList.clear()
+            indx = 0
+    return fList
+        
+filteredList = loopThrough(roughList, filteredList, tempList, 0)
+print(f"Light 1:               Light 2:             Light 3:\n{filteredList}")
