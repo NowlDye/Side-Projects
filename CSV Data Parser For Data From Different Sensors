@@ -1,0 +1,128 @@
+import csv
+
+# Emotion Sensor
+file1 = open('.\Erasmus\Emotion-Sensor\EmotionData.csv')
+csvreader1 = csv.reader(file1)
+next(csvreader1)
+
+rowData = []
+
+happy = []
+bad = []
+okay = []
+
+for row in csvreader1:
+    cleaned_row = [0 if col == '' else int(col) for col in row[1:4]]
+    for i, col in enumerate(row[1:4]):
+        if col == '':
+            rowData.append(0)
+        else:
+            rowData.append(cleaned_row[i])
+
+for x in range(0, len(rowData)):
+    if (x + 1) % 3 == 1:
+        happy.append(rowData[x])
+    elif (x + 1) % 3 == 2:
+        bad.append(rowData[x])
+    elif (x + 1) % 3 == 0:
+        okay.append(rowData[x])
+
+totals_emotion = [sum(happy), sum(bad), sum(okay)]
+
+
+# Light Sensor
+file2 = open('.\Erasmus\Light-Sensor\Light-Data.csv')
+csvreader2 = csv.reader(file2)
+next(csvreader2)
+
+roughList = []
+filteredList = []
+tempList = []
+
+for row in csvreader2:
+    roughList.append(row[1:4])
+
+filteredList_light = []
+def loopThrough(rList, fList, tList, index):
+    indx = index
+    for x in rList:
+        tList.append(x[indx])
+        indx += 1 
+        if len(fList) == len(rList) // 3:
+            return fList
+        elif indx == 3:
+            fList.append(tList.copy())
+            tList.clear()
+            indx = 0
+    return fList
+
+filteredList_light = loopThrough(roughList, filteredList, tempList, 0)
+
+
+# Sound Sensor
+file3 = open('.\Erasmus\Sound-Sensor\Sound-Data.csv')
+csvreader3 = csv.reader(file3)
+next(csvreader3)
+sound = []
+
+for row in csvreader3:
+    sound.append(row[1:])
+
+
+# Temperature Sensor
+file4 = open('.\Erasmus\Temperature-Sensor\Temperature-Data.csv')
+csvreader4 = csv.reader(file4)
+next(csvreader4)
+temperature = []
+
+for row in csvreader4:
+    temperature.append(row[1])
+
+
+# Write processed data to a single CSV file with blank columns
+with open('processed_data.csv', 'w', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+
+    # Write headers
+    writer.writerow(['Emotion Sensor', '', '', '', 'Light Sensor', '', '', '', 'Sound Sensor', '', '', 'Temperature Sensor'])
+    writer.writerow(['Happy', 'Bad', 'Okay', '', 'Light 1', 'Light 2', 'Light 3', '', 'Sound', '', '', 'Temperature'])
+
+    # Write data
+    max_rows = max(len(happy), len(bad), len(okay), len(filteredList_light), len(sound), len(temperature))
+    for i in range(max_rows):
+        row_data = []
+
+        # Emotion Sensor data
+        if i < len(happy):
+            row_data.extend([happy[i], bad[i], okay[i]])
+        else:
+            row_data.extend([''] * 3)
+
+        # Blank columns
+        row_data.extend([''] * 1)
+
+        # Light Sensor data
+        if i < len(filteredList_light):
+            row_data.extend(filteredList_light[i])
+        else:
+            row_data.extend([''] * 3)
+
+        # Blank columns
+        row_data.extend([''] * 1)
+
+        # Sound Sensor data
+        if i < len(sound):
+            row_data.append(sound[i])
+        else:
+            row_data.append('')
+
+        # Blank columns
+        row_data.extend([''] * 2)
+
+        # Temperature Sensor data
+        if i < len(temperature):
+            row_data.append(temperature[i])
+        else:
+            row_data.append('')
+
+        writer.writerow(row_data)
